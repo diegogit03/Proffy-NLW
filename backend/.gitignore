@@ -1,3 +1,7 @@
 node_modules
 
 yarn.lock
+
+.gitignore
+
+database.sqlite

@@ -6,12 +6,7 @@ export async function up(Knex: Knex){
         table.string('subject').notNullable();
         table.decimal('cost').notNullable();
 
-        table.integer('user_id')
-            .notNullable()
-            .references('id')
-            .inTable('users')
-            .onUpdate('CASCADE')
-            .onDelete('CASCADE')
+        table.integer('user_id').notNullable().references('id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE')
     });
 }
 
