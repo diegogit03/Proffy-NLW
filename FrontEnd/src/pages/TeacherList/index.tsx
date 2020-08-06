@@ -1,20 +1,44 @@
-import React from 'react';
+import React, { useState, FormEvent } from 'react';
 
 import TeacherItem from '../../components/TeacherItem';
 import PageHeader from '../../components/PageHeader';
 import Input from '../../components/input';
 import Select from '../../components/Select';
 
+import api from '../../services/api';
+
 import './styles.css';
 
 function TeacherList(){
+    const [teachers, setTeachers] = useState([]);
+
+    const [subject, setSubject] = useState('');
+    const [week_day, setWeekDay] = useState('');
+    const [time, setTime] = useState('');
+
+    async function searchTeachers(e:FormEvent){
+        e.preventDefault();
+
+        const response = await api.get('/classes', {
+            params: {
+                subject,
+                week_day,
+                time
+            }
+        })
+
+        setTeachers(response.data)
+    }
+
     return (
         <div id="page-teacher-list" className="container">
             <PageHeader title="Estes são os proffys disponiveis.">
-                <form id="search-teachers">
+                <form id="search-teachers" onSubmit={searchTeachers}>
                     <Select 
                         name="subject"
-                        label="Matéria" 
+                        label="Matéria"
+                        value={subject} 
+                        onChange={e => setSubject(e.target.value)}
                         options={[
                             {value: 'Artes', label: 'Artes'},
                             {value: 'Biologia', label: 'Biologia'},
@@ -31,6 +55,8 @@ function TeacherList(){
                     <Select 
                         name="week_day"
                         label="Dia da Semana" 
+                        value={week_day} 
+                        onChange={e => setWeekDay(e.target.value)}
                         options={[
                             {value: '0', label: 'Doming'},
                             {value: '1', label: 'Segunda-feira'},
@@ -41,34 +67,27 @@ function TeacherList(){
                             {value: '6', label: 'Sabado'},
                         ]}
                     />
-                    <Input type="time" name="time" label="Hora" />
+                    <Input type="time" name="time" label="Hora" value={time} onChange={e => setTime(e.target.value)}/>
+
+                    <button type="submit">
+                        Buscar
+                    </button>
                 </form>
             </PageHeader>
 
             <main>
-                <TeacherItem 
-                    name="Diego Henrique de Oliveira"  
-                    description="programador web"
-                    subject="Programação"
-                    img="https://avatars0.githubusercontent.com/u/60300499?s=460&u=dbe604df0229d2fc034070d00e180730c6d4c0db&v=4"
-                    priceForHour="2,00"
+                {teachers.map((info: any) => (
+                    <TeacherItem 
+                    key={info.id}
+                    name={info.name}
+                    description={info.bio}
+                    subject={info.subject}
+                    img={info.avatar}
+                    priceForHour={info.cost}
+                    number={info.whatszapp}
+                    teacher_id={info.id}
                 />
-
-                <TeacherItem 
-                    name="Diego Henrique de Oliveira"  
-                    description="programador web"
-                    subject="Programação"
-                    img="https://avatars0.githubusercontent.com/u/60300499?s=460&u=dbe604df0229d2fc034070d00e180730c6d4c0db&v=4"
-                    priceForHour="2,00"
-                />
-
-                <TeacherItem 
-                    name="Diego Henrique de Oliveira"  
-                    description="programador Java"
-                    subject="Programação"
-                    img="https://avatars0.githubusercontent.com/u/60300499?s=460&u=dbe604df0229d2fc034070d00e180730c6d4c0db&v=4"
-                    priceForHour="2,00"
-                />
+                ))}
             </main>
         </div>
     )
